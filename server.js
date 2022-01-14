@@ -9,6 +9,8 @@ const PORT = process.env.PORT || 3001;
 
 const app = express();
 
+app.use(express.static('public'));
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -62,10 +64,11 @@ function createNewAnimal(body, animalsArray) {
 }
 
 function validateAnimal(animal) {
+
     if (!animal.name || typeof animal.name !== 'string') {
         return false;
     }
-    if (!animal.species || typeof animal.species !== 'sting') {
+    if (!animal.species || typeof animal.species !== 'string') {
         return false;
     }
     if (!animal.diet || typeof animal.diet !== 'string') {
@@ -97,17 +100,35 @@ app.get('/api/animals/:id', (req, res) => {
     }
 });
 
+
 app.post('/api/animals', (req, res) => {
+
     req.body.id = animals.length.toString();
 
     if (!validateAnimal(req.body)) {
+        console.log("afterValidte");
         res.status(400).send('The animal is not properly formatted.');
     } else {
         const animal = createNewAnimal(req.body, animals);
         res.json(animal);
     }
 
-    
+});
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
+});
+
+app.get('/animals', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/animals.html'));
+});
+
+app.get('/zookeepers', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/zookeepers.html'));
+});
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
 });
 
 app.listen(PORT, () => {
